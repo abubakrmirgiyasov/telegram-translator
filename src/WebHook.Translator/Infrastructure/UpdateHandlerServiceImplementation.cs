@@ -3,7 +3,9 @@ using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using WebHook.Translator.Common;
+using WebHook.Translator.Infrastructure.DbContext.Interfaces;
 using WebHook.Translator.Infrastructure.Managers.Interfaces;
+using WebHook.Translator.Infrastructure.Repositories;
 using WebHook.Translator.Models;
 using WebHook.Translator.Services;
 
@@ -15,12 +17,16 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
     private readonly CommandManager _command;
     private readonly ILanguageManager _languageManager;
     private readonly IGameManager _gameManager;
+    private readonly UserRepository _userRepository;
+    private readonly TestRepository _testRepository;
 
     public UpdateHandlerServiceImplementation(
         JsonSerializerOptions jsonSerializerOptions,
         CommandManager command,
         ILanguageManager languageManager,
         IGameManager gameManager,
+        UserRepository userRepository,
+        TestRepository testRepository,
         ITelegramBotClient botClient) 
         : base(botClient)
     {
@@ -28,6 +34,8 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
         _gameManager = gameManager;
         _languageManager = languageManager;
         _jsonSerializerOptions = jsonSerializerOptions;
+        _userRepository = userRepository;
+        _testRepository = testRepository;
 
         MessageReceived += OnMessageReceived;
         CallBackQuery += OnCallbackQueryData;
@@ -38,7 +46,9 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
         try
         {
             long chatId = message.Chat.Id;
-            
+
+            var user = await _userRepository.GetOrCreateUserAsync(chatId, message.From?.LanguageCode);
+
             if (message.Text!.StartsWith('/'))
             {
                 await _command.HandleCommandAsync(

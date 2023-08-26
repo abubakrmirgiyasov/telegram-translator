@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHook.Translator", "src\WebHook.Translator\WebHook.Translator.csproj", "{2C5A46B0-5D48-4DCE-8C22-D138213B7B7F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6E0D019F-03C8-48E9-B5D6-8FA9ADAF9874}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2C5A46B0-5D48-4DCE-8C22-D138213B7B7F} = {6E0D019F-03C8-48E9-B5D6-8FA9ADAF9874}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A4D61E11-CC19-47F0-B168-B59DFB22FDF2}

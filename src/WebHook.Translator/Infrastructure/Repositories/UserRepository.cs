@@ -1,22 +1,39 @@
-﻿using WebHook.Translator.Infrastructure.Repositories.Interfaces;
+﻿using Microsoft.Extensions.Options;
+using WebHook.Translator.Common;
+using WebHook.Translator.Infrastructure.DbContext;
 using WebHook.Translator.Models;
 
 namespace WebHook.Translator.Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository : Repository<User>
 {
-    public Task<User> GetOrCreateUserAsync(long chatId)
+    public UserRepository(IOptions<AppSettings> settings) 
+        : base(settings) { }
+
+    public async Task<User> GetOrCreateUserAsync(long chatId, string? language = null)
     {
-        throw new NotImplementedException();
+        var user = FilterBy(x => x.ChatId == chatId).FirstOrDefault();
+        if (user is null)
+        {
+            user = new User()
+            {
+                ChatId = chatId,
+                SourceLanguage = language,
+            };
+            await InsertOneAsync(user);
+        }
+        return user;
     }
 
-    public Task UpdateSourceLanguage(User user, string newLanguage)
+    public Task UpdateSourceLanguage(User user,  string language)
     {
-        throw new NotImplementedException();
+        user.SourceLanguage = language;
+        return Task.CompletedTask; ////
     }
 
-    public Task UpdateTargetLanguage(User user, string newLanguage)
+    public Task UpdateTargetLanguage(User user, string language)
     {
-        throw new NotImplementedException();
+        user.TargetLanguage = language;
+        return Task.CompletedTask; ////
     }
 }

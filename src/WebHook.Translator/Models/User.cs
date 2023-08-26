@@ -1,16 +1,13 @@
-﻿namespace WebHook.Translator.Models;
+﻿using WebHook.Translator.Common;
 
-public class User
+namespace WebHook.Translator.Models;
+
+[BsonCollection("users")]
+public class User : Document
 {
-    public Guid Id { get; set; }
-
     public long ChatId { get; set; }
 
     public string? SourceLanguage { get; set; }
 
     public string? TargetLanguage { get; set; }
-
-    public DateTime CreationDate { get; } = DateTime.Now;
-
-    public DateTime? UpdateDate { get; set; }
 }

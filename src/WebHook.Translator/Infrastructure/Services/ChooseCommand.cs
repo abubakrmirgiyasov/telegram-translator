@@ -2,7 +2,7 @@
 using Telegram.Bot;
 using WebHook.Translator.Common;
 using WebHook.Translator.Infrastructure.Managers.Interfaces;
-using WebHook.Translator.Infrastructure.Repositories.Interfaces;
+using WebHook.Translator.Infrastructure.Repositories;
 using WebHook.Translator.Infrastructure.Services.Interfaces;
 using WebHook.Translator.Models;
 using WebHook.Translator.Utils;
@@ -11,13 +11,13 @@ namespace WebHook.Translator.Infrastructure.Services;
 
 public class ChooseCommand : ICommand
 {
-    private readonly IUserRepository _user;
+    private readonly UserRepository _user;
     private readonly ILanguageManager _language;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly int _replyKeyboardColumns;
 
     public ChooseCommand(
-        IUserRepository userRepository, 
+        UserRepository userRepository, 
         ILanguageManager languageManager,
         JsonSerializerOptions jsonSerializerOptions,
         int replyKeyboardColumns)
