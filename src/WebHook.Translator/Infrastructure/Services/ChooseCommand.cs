@@ -50,7 +50,6 @@ public class ChooseCommand : ICommand
             var markups = Utilities.ParseCollectionKeyboardMarkup(
                 models: languages,
                 columns: _replyKeyboardColumns,
-                direction: KeyboardDirection.Target,
                 markupType: MarkupType.Language,
                 messageId: messageId,
                 jsonSerializerOptions: _jsonSerializerOptions);

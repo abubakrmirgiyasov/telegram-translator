@@ -1,4 +1,5 @@
 ﻿using WebHook.Translator.Common;
+using WebHook.Translator.Models.Interfaces;
 
 namespace WebHook.Translator.Models;
 
@@ -10,4 +11,6 @@ public class Test : Document
     public string[] Options { get; set; } = null!;
 
     public int CorrectOption { get; set; }
+
+    public string Hint { get; set; } = null!;
 }

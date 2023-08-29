@@ -1,4 +1,5 @@
 ﻿using WebHook.Translator.Common;
+using WebHook.Translator.Models.Interfaces;
 
 namespace WebHook.Translator.Models;
 

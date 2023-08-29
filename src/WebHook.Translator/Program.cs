@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.Features;
 using System.Text.Json;
 using Telegram.Bot;
 using WebHook.Translator.Common;
@@ -6,6 +7,7 @@ using WebHook.Translator.Infrastructure.DbContext;
 using WebHook.Translator.Infrastructure.DbContext.Interfaces;
 using WebHook.Translator.Infrastructure.Managers;
 using WebHook.Translator.Infrastructure.Managers.Interfaces;
+using WebHook.Translator.Infrastructure.Messages;
 using WebHook.Translator.Infrastructure.Repositories;
 using WebHook.Translator.Infrastructure.Services;
 using WebHook.Translator.Services;
@@ -40,8 +42,11 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<TestRepository>();
 
+builder.Services.AddScoped<CustomPoll>();
+
 builder.Services.AddScoped<ILanguageManager, LanguageManager>();
 builder.Services.AddScoped<IGameManager, GameManager>();
+builder.Services.AddScoped<ITestManager, TestManager>();
 builder.Services.AddScoped<UpdateHandlerService, UpdateHandlerServiceImplementation>();
 
 builder.Services.AddCommandManager((serviceProvider, commandManager) =>
@@ -65,15 +70,26 @@ builder.Services.AddCommandManager((serviceProvider, commandManager) =>
         replyKeyboardColumns: Constants.KEYBOARD_COLUMNS));
 });
 
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.BufferBody = true;
+    options.ValueCountLimit = int.MaxValue;
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = int.MaxValue;
+    options.MemoryBufferThreshold = int.MaxValue;
+});
+
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHostedService<WebHookBackgroundService>();
 
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
+app.UsePathBase(new PathString("/api"));
+app.UseRouting();
 
 app.MapControllers();
 

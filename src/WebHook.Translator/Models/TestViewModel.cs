@@ -4,16 +4,18 @@ using WebHook.Translator.Models.Interfaces;
 
 namespace WebHook.Translator.Models;
 
-public class Game : IBase
+public class TestViewModel : IBase
 {
-    public string Type { get; set; }
+    public string Code { get; set; }
 
     public string Ico { get; set; }
 
-    public string Code { get; set; }
+    public string Option { get; set; }
+
+    public string Question { get; set; }
 
     public override string ToString()
     {
-        return $"{Ico} {Type}";
+        return $"{Ico} {Option}";
     }
 }

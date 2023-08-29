@@ -6,7 +6,7 @@ using MongoDB.Driver;
 using System.Linq.Expressions;
 using WebHook.Translator.Common;
 using WebHook.Translator.Infrastructure.DbContext.Interfaces;
-using WebHook.Translator.Models;
+using WebHook.Translator.Models.Interfaces;
 
 namespace WebHook.Translator.Infrastructure.DbContext;
 
@@ -48,6 +48,20 @@ public class Repository<TDocument> : IRepository<TDocument>
             .Find(filterExpression)
             .Project(projectionExpression)
             .ToEnumerable();
+    }
+
+    public TDocument FindOneBydId(string id)
+    {
+        var objectId = new ObjectId(id);
+        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, objectId);
+        return _Collection.Find(filter).SingleOrDefault();
+    }
+
+    public Task<TDocument> FindOneByIdAsync(string id)
+    {
+        var objectId = new ObjectId(id);
+        var filter = Builders<TDocument>.Filter.Eq(x => x.Id, objectId);
+        return _Collection.Find(filter).SingleOrDefaultAsync();
     }
 
     public void InsertOne(TDocument document)

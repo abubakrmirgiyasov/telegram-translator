@@ -17,7 +17,7 @@ public class CustomLogger<T>
     private static void WriteToConsole(string message, ConsoleColor color)
     {
         Console.BackgroundColor = color;
-        Console.WriteLine(message);
+        Console.WriteLine($"{typeof(T).Name}: {message}");
         Console.BackgroundColor = ConsoleColor.Black;
     }
 

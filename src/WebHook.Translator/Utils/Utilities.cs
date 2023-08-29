@@ -1,37 +1,39 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using Telegram.Bot.Types.ReplyMarkups;
 using WebHook.Translator.Common;
 using WebHook.Translator.Models;
+using WebHook.Translator.Models.Interfaces;
 
 namespace WebHook.Translator.Utils;
 
 public static partial class Utilities
 {
     public static InlineKeyboardMarkup ParseCollectionKeyboardMarkup(
-        IEnumerable<IBase> models,
         int columns,
         int messageId,
-        KeyboardDirection direction,
         MarkupType markupType,
-        JsonSerializerOptions jsonSerializerOptions)
+        JsonSerializerOptions jsonSerializerOptions,
+        IEnumerable<IBase>? models = null)
     {
         var buttonList = new List<IEnumerable<InlineKeyboardButton>>();
         var row = new List<InlineKeyboardButton>();
 
-        foreach (var model in models)
+        var list = models?.ToList();
+
+        for (int i = 0; i < list?.Count; i++)
         {
             var callbackData = new ChoiceResponse()
             {
-                Code = $"{model.Code}_{(int)markupType}",
-                Direction = direction,
-                MessageId = messageId,
+                Code = $"{(int)markupType}_{list[i].Code}",
+                Id = messageId,
             };
 
+            var json = JsonSerializer.Serialize(callbackData, jsonSerializerOptions);
+
             row.Add(InlineKeyboardButton.WithCallbackData(
-                text: model.ToString()!,
-                callbackData: JsonSerializer.Serialize(
-                    value: callbackData,
-                    options: jsonSerializerOptions)));
+                text: list[i].ToString()!,
+                callbackData: json));
 
             if (row.Count == columns)
             {

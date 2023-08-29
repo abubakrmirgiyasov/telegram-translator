@@ -42,7 +42,6 @@ public class GameCommand : ICommand
         var markups = Utilities.ParseCollectionKeyboardMarkup(
             models: games,
             columns: _replyKeyboardColumns,
-            direction: KeyboardDirection.Source,
             markupType: MarkupType.Game,
             messageId: messageId,
             jsonSerializerOptions: _jsonSerializerOptions);

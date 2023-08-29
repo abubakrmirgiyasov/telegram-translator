@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using WebHook.Translator.Models;
+using WebHook.Translator.Models.Interfaces;
 
 namespace WebHook.Translator.Infrastructure.DbContext.Interfaces;
 

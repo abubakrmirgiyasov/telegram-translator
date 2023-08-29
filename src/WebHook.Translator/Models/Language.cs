@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using WebHook.Translator.Models.Interfaces;
+
 namespace WebHook.Translator.Models;
 
 public class Language : IBase
