@@ -10,13 +10,17 @@ public class TestRepository : Repository<Test>
     public TestRepository(IOptions<AppSettings> settings) 
         : base(settings) { }
 
-    public Task<TestViewModel> GetSingleRandomTestAsync(long chatId, CancellationToken cancellationToken = default)
+    public async Task<TestViewModel> GetSingleRandomTestAsync(long chatId, CancellationToken cancellationToken = default)
     {
-        var test = FilterBy(x => x.Question != "");
+        var test = await Task.FromResult(FilterBy(x => x.Question != "").ToList());
 
-        return new Task<TestViewModel>()
+        int random = new Random().Next(0, test.Count);
+
+        return new TestViewModel()
         {
-
+            OptionId = test[random].CorrectOption,
+            Question = test[random].Question,
+            
         };
     }
 }

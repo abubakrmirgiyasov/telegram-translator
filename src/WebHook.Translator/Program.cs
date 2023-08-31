@@ -41,7 +41,6 @@ builder.Services.AddScoped<ITelegramBotClient>(serviceProvider =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<TestRepository>();
-builder.Services.AddScoped<UserTestRepository>();
 
 builder.Services.AddScoped<CustomPoll>();
 

@@ -16,16 +16,13 @@ public class CustomPoll
     private readonly TestRepository _testRepository;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ITestManager _testManager;
-    private readonly UserTestRepository _userTestRepository;
 
     public CustomPoll(
         TestRepository testRepository,
-        UserTestRepository userTestRepository,
         JsonSerializerOptions jsonSerializerOptions, 
         ITestManager testManager,
         ITelegramBotClient botClient)
     {
-        _userTestRepository = userTestRepository;
         _testRepository = testRepository;
         _jsonSerializerOptions = jsonSerializerOptions;
         _testManager = testManager;
@@ -75,18 +72,9 @@ public class CustomPoll
             sb.AppendLine("Вопрос📚: " + question.Question);
 
             if (isCorrect)
-            {
                 sb.AppendLine("✅ Вы ответили правильно, " + question.Options[correctOption]);
-                await _userTestRepository.InsertOneAsync(new UserTest()
-                {
-                    UserId = chatId.ToString(),
-                    TestId = question.Id,
-                });
-            }
             else
-            {
                 sb.AppendLine("❌ Вы ответили неправильно, " + question.Hint);
-            }
 
             await _botClient.SendTextMessageAsync(
                 chatId: chatId,
