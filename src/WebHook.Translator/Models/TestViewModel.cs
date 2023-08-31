@@ -14,6 +14,8 @@ public class TestViewModel : IBase
 
     public string Question { get; set; }
 
+    public int OptionId { get; set; }
+
     public override string ToString()
     {
         return $"{Ico} {Option}";

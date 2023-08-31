@@ -30,7 +30,7 @@ public class TestManager : ITestManager
         var questions = _testRepository.FilterBy(x => x.Question != "").ToList();
         var extractedModels = new List<TestViewModel>();
 
-        for (int i = 0; i < questions.Count; i++)
+        for (int i = 0; i < questions.Count;)
         {
             for (int j = 0; j < questions[i].Options.Length; j++)
             {
@@ -39,6 +39,7 @@ public class TestManager : ITestManager
                     Code = questions[i].Id.ToString(),
                     Option = questions[i].Options[j],
                     Question = questions[i].Question,
+                    OptionId = j,
                     Ico = "\U00002753",
                 });
             }

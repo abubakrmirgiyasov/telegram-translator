@@ -23,16 +23,18 @@ public static partial class Utilities
 
         for (int i = 0; i < list?.Count; i++)
         {
-            var callbackData = new ChoiceResponse()
-            {
-                Code = $"{(int)markupType}_{list[i].Code}",
-                Id = messageId,
-            };
+            string text = list[i].ToString()!;
+            var response = new ChoiceResponse() { Id = messageId };
 
-            var json = JsonSerializer.Serialize(callbackData, jsonSerializerOptions);
+            if (list[i] is TestViewModel tsm)
+                response.Code = $"{tsm.OptionId}_{(int)markupType}_{list[i].Code}";
+            else
+                response.Code = $"{(int)markupType}_{list[i].Code}";
+
+            var json = JsonSerializer.Serialize(response, jsonSerializerOptions);
 
             row.Add(InlineKeyboardButton.WithCallbackData(
-                text: list[i].ToString()!,
+                text: text,
                 callbackData: json));
 
             if (row.Count == columns)

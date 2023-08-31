@@ -89,7 +89,12 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
                 return;
 
             string[] res = response.Code.Split('_');
-            var temp = (res[1], Enum.Parse<MarkupType>(res[0]));
+            (string, MarkupType) temp;
+
+            if (res.Length == 3)
+                temp = (res[2], Enum.Parse<MarkupType>(res[1]));
+            else
+                temp = (res[1], Enum.Parse<MarkupType>(res[0]));
             
             long chatId = query.Message!.Chat.Id;
 
@@ -120,11 +125,12 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
 
     private async Task PollEdit(long chatId, ChoiceResponse response, CancellationToken cancellationToken)
     {
-        var question = await _testManager.GetTestByCodeAsync(response.Code.Split('_')[1]);
+        var question = await _testManager.GetTestByCodeAsync(response.Code.Split('_')[2]);
 
          await _poll.CheckForAnswer(
             chatId: chatId,
-            correctOption: "1",
+            messageId: response.Id,
+            correctOption: int.Parse(response.Code.Split('_')[0]),
             model: question,
             cancellationToken: cancellationToken);
     }

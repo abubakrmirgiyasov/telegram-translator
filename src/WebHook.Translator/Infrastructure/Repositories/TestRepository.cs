@@ -9,4 +9,14 @@ public class TestRepository : Repository<Test>
 {
     public TestRepository(IOptions<AppSettings> settings) 
         : base(settings) { }
+
+    public Task<TestViewModel> GetSingleRandomTestAsync(long chatId, CancellationToken cancellationToken = default)
+    {
+        var test = FilterBy(x => x.Question != "");
+
+        return new Task<TestViewModel>()
+        {
+
+        };
+    }
 }

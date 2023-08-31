@@ -1,12 +1,10 @@
-﻿using System.Text.Json;
-using System.Threading;
+﻿using System.Text;
+using System.Text.Json;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using WebHook.Translator.Common;
 using WebHook.Translator.Infrastructure.Managers.Interfaces;
 using WebHook.Translator.Infrastructure.Repositories;
 using WebHook.Translator.Models;
-using WebHook.Translator.Models.Interfaces;
 using WebHook.Translator.Services;
 using WebHook.Translator.Utils;
 
@@ -18,13 +16,16 @@ public class CustomPoll
     private readonly TestRepository _testRepository;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ITestManager _testManager;
+    private readonly UserTestRepository _userTestRepository;
 
     public CustomPoll(
-        TestRepository testRepository, 
+        TestRepository testRepository,
+        UserTestRepository userTestRepository,
         JsonSerializerOptions jsonSerializerOptions, 
         ITestManager testManager,
         ITelegramBotClient botClient)
     {
+        _userTestRepository = userTestRepository;
         _testRepository = testRepository;
         _jsonSerializerOptions = jsonSerializerOptions;
         _testManager = testManager;
@@ -52,7 +53,7 @@ public class CustomPoll
             await _botClient.EditMessageTextAsync(
                 chatId: chatId,
                 messageId: messageId,
-                text: questions.ToList()[0].Code,
+                text: "Вопрос📚: " +  questions.ToList()[0].Question,
                 replyMarkup: markups,
                 cancellationToken: cancellationToken);
         }
@@ -63,22 +64,41 @@ public class CustomPoll
         }
     }
 
-    public async Task<bool> CheckForAnswer(long chatId, string correctOption, TestViewModel model, CancellationToken cancellationToken = default)
+    public async Task<bool> CheckForAnswer(long chatId, int messageId, int correctOption, TestViewModel model, CancellationToken cancellationToken = default)
     {
         try
         {
-            int messageId = (await _botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: "checking..",
-                cancellationToken: cancellationToken)).MessageId;
+            var question = await _testRepository.FindOneByIdAsync(model.Code);
+            bool isCorrect = question.CorrectOption == correctOption;
+            var sb = new StringBuilder();
 
-            await _botClient.EditMessageTextAsync(
+            sb.AppendLine("Вопрос📚: " + question.Question);
+
+            if (isCorrect)
+            {
+                sb.AppendLine("✅ Вы ответили правильно, " + question.Options[correctOption]);
+                await _userTestRepository.InsertOneAsync(new UserTest()
+                {
+                    UserId = chatId.ToString(),
+                    TestId = question.Id,
+                });
+            }
+            else
+            {
+                sb.AppendLine("❌ Вы ответили неправильно, " + question.Hint);
+            }
+
+            await _botClient.SendTextMessageAsync(
                 chatId: chatId,
-                messageId: messageId,
-                text: "asd",
+                text: sb.ToString(),
                 cancellationToken: cancellationToken);
 
-            return true;
+            await _botClient.DeleteMessageAsync(
+                chatId: chatId,
+                messageId: messageId,
+                cancellationToken: cancellationToken);
+
+            return isCorrect;
         }
         catch (Exception ex)
         {
