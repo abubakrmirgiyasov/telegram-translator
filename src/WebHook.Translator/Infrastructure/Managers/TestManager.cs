@@ -43,6 +43,7 @@ public class TestManager : ITestManager
                     Ico = "\U00002753",
                 });
             }
+            break;
         }
 
         return Task.FromResult<IEnumerable<TestViewModel>>(extractedModels);

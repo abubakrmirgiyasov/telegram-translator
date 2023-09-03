@@ -86,6 +86,33 @@ public class CustomPoll
                 messageId: messageId,
                 cancellationToken: cancellationToken);
 
+            var newQuestion = await _testRepository.GetSingleRandomTestAsync(question.Id);
+
+            if (newQuestion.Count == 0)
+                await _botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "There are no questions for you 😓..",
+                    cancellationToken: cancellationToken);
+
+            int newMessageId = (await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: "Wait new question..",
+                cancellationToken: cancellationToken)).MessageId;
+
+            var markups = Utilities.ParseCollectionKeyboardMarkup(
+                columns: newQuestion.Count,
+                models: newQuestion,
+                markupType: MarkupType.Poll,
+                messageId: newMessageId,
+                jsonSerializerOptions: _jsonSerializerOptions);
+
+            await _botClient.EditMessageTextAsync(
+                chatId: chatId,
+                messageId: newMessageId,
+                text: "Вопрос📚: " +  newQuestion[0].Question,
+                replyMarkup: markups,
+                cancellationToken: cancellationToken);
+
             return isCorrect;
         }
         catch (Exception ex)
