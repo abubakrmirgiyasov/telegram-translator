@@ -1,5 +1,6 @@
 import React, { FC, useState } from "react";
 import Style from "./Sidebar.module.css";
+import { Link } from "react-router-dom";
 
 const Sidebar: FC = () => {
   const [isMenuChecked, setIsMenuChecked] = useState<boolean>(false);
@@ -49,10 +50,13 @@ const Sidebar: FC = () => {
           <nav>
             <ul>
               <li>
-                <a href={`/contacts/1`}>Your Name</a>
+                <Link to={`/question-image`}>Image</Link>
               </li>
               <li>
-                <a href={`/contacts/2`}>Your Friend</a>
+                <Link to={`/test`}>Test</Link>
+              </li>
+              <li>
+                <Link to={`/about`}>About</Link>
               </li>
             </ul>
           </nav>

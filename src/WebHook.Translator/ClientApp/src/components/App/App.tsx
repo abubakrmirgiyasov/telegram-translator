@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { HashRouter as Router, Link, Routes, Route } from "react-router-dom";
 import Sidebar from "../Layouts/Sidebar/Sidebar";
 import axios from "axios";
+import Images from "../../pages/Test/Images";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Sidebar />
       <Routes>
         <Route path={"/"} element={<Home />} errorElement={<Error />} />
+        <Route path={"/question-image"} element={<Images />} />
         <Route path={"/test"} element={<Test />} />
         <Route path={"/about"} element={<About />} />
       </Routes>
@@ -19,6 +21,7 @@ function App() {
 const Error = () => {
   return <h2>Error page</h2>;
 };
+
 const Home = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,11 +30,11 @@ const Home = () => {
       question: e.currentTarget.question.value,
       options: [e.currentTarget.option1.value, e.currentTarget.option2.value],
       correctOption: e.currentTarget.correctOption.value,
-      hint: "@" + e.currentTarget.hint.value,
+      hint: e.currentTarget.hint.value,
     };
 
     axios
-      .post("/api/admin/test", data)
+      .post("/api/admin/createquestion", data)
       .then((r) => console.log(r))
       .catch((e) => console.log(e));
   };
@@ -54,9 +57,11 @@ const Home = () => {
     </div>
   );
 };
+
 const Test = () => {
   return <h1>Foo Page</h1>;
 };
+
 const About = () => {
   return <h1>Bar Page</h1>;
 };

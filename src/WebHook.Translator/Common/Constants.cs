@@ -93,4 +93,5 @@ public enum MarkupType : byte
     Language = 0,
     Game = 1,
     Poll = 2,
+    Image = 3,
 }

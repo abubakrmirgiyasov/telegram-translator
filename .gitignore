@@ -15,6 +15,10 @@
 
 # Mono auto generated files
 mono_crash.*
+*src/WebHook.Translator/wwwroot
+src/WebHook.Translator/wwwroot
+./src/WebHook.Translator/wwwroot
+*./src/WebHook.Translator/wwwroot
 
 # Build results
 [Dd]ebug/
