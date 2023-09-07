@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using OpenAI.Managers;
+using OpenAI;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using Telegram.Bot;
@@ -21,6 +23,7 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
     private readonly ILanguageManager _languageManager;
     private readonly IGameManager _gameManager;
     private readonly ITestManager _testManager;
+    private readonly IImageQuestionManager _imageQuestionManager;
     private readonly UserRepository _userRepository;
     private readonly CustomPoll _poll;
 
@@ -31,8 +34,9 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
         IGameManager gameManager,
         UserRepository userRepository,
         ITestManager testManager,
+        IImageQuestionManager imageQuestionManager,
         CustomPoll poll,
-        ITelegramBotClient botClient) 
+        ITelegramBotClient botClient)
         : base(botClient)
     {
         _command = command;
@@ -42,6 +46,7 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
         _userRepository = userRepository;
         _poll = poll;
         _testManager = testManager;
+        _imageQuestionManager = imageQuestionManager;
 
         MessageReceived += OnMessageReceived;
         CallBackQuery += OnCallbackQueryData;
@@ -58,17 +63,22 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
             if (message.Text!.StartsWith('/'))
             {
                 await _command.HandleCommandAsync(
-                    chatId:  chatId,
+                    chatId: chatId,
                     command: message.Text,
                     botClient: _BotClient,
                     cancellationToken: cancellationToken);
             }
             else
             {
-                await _BotClient.SendTextMessageAsync(
-                    chatId: chatId,
-                    text: "testasd",
-                    cancellationToken: cancellationToken);
+                var openAiService = new OpenAIService(new OpenAiOptions()
+                {
+                    ApiKey =  "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"
+                });
+
+                //await _BotClient.SendTextMessageAsync(
+                //    chatId: chatId,
+                //    text: OpenAI,
+                //    cancellationToken: cancellationToken);
             }
 
             CustomLogger<UpdateHandlerServiceImplementation>.Write(message.Text, ConsoleColor.Green);
@@ -95,7 +105,7 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
                 temp = (res[2], Enum.Parse<MarkupType>(res[1]));
             else
                 temp = (res[1], Enum.Parse<MarkupType>(res[0]));
-            
+
             long chatId = query.Message!.Chat.Id;
 
             switch (temp.Item2)
@@ -109,30 +119,49 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
                 case MarkupType.Poll:
                     await PollEdit(chatId, response, cancellationToken);
                     break;
+                case MarkupType.Image:
+                    await ImageEdit(chatId, response, cancellationToken);
+                    break;
                 default:
+                    string text = "Error type /functions";
+
+                    await _BotClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: text,
+                        cancellationToken: cancellationToken);
                     break;
             }
-            
+
         }
         catch (Exception ex)
         {
             CustomLogger<UpdateHandlerService>.Write(ex.Message, ConsoleColor.Red);
             throw new Exception(ex.Message, ex);
-
-            // HandleErrorAsync(....;
         }
+    }
+
+    private async Task ImageEdit(long chatId, ChoiceResponse response, CancellationToken cancellationToken)
+    {
+        var imageQuestion = await _imageQuestionManager.GetImageQuestionByCodeAsync(response.Code.Split('_')[2]);
+
+        await _poll.CheckImageQuestionAnswer(
+            chatId: chatId,
+            messageId: response.Id,
+            correctOption: int.Parse(response.Code.Split('_')[0]),
+            model: imageQuestion,
+            cancellationToken: cancellationToken);
     }
 
     private async Task PollEdit(long chatId, ChoiceResponse response, CancellationToken cancellationToken)
     {
         var question = await _testManager.GetTestByCodeAsync(response.Code.Split('_')[2]);
 
-         await _poll.CheckForAnswer(
-            chatId: chatId,
-            messageId: response.Id,
-            correctOption: int.Parse(response.Code.Split('_')[0]),
-            model: question,
-            cancellationToken: cancellationToken);
+        await _poll.CheckForAnswer(
+           chatId: chatId,
+           messageId: response.Id,
+           correctOption: int.Parse(response.Code.Split('_')[0]),
+           model: question,
+           cancellationToken: cancellationToken);
     }
 
     private async Task GameEdit(long chatId, ChoiceResponse response, CancellationToken cancellationToken)
@@ -146,7 +175,10 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
             text: text,
             cancellationToken: cancellationToken);
 
-        await _poll.CreateQuestion(chatId, cancellationToken);
+        if (game.Code == "ss")
+            await _poll.CreateImageQuestion(chatId, cancellationToken);
+        else if (game.Code == "test")
+            await _poll.CreateQuestion(chatId, cancellationToken);
     }
 
     private async Task LanguageEdit(long chatId, ChoiceResponse response, CancellationToken cancellationToken)

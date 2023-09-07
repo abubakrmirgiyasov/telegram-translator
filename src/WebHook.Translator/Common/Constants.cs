@@ -95,3 +95,9 @@ public enum MarkupType : byte
     Poll = 2,
     Image = 3,
 }
+
+public enum GameType : byte
+{
+    Test = 1,
+    Image = 2,
+}

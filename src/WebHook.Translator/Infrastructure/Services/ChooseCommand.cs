@@ -14,18 +14,15 @@ public class ChooseCommand : ICommand
     private readonly UserRepository _user;
     private readonly ILanguageManager _language;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private readonly int _replyKeyboardColumns;
 
     public ChooseCommand(
         UserRepository userRepository, 
         ILanguageManager languageManager,
-        JsonSerializerOptions jsonSerializerOptions,
-        int replyKeyboardColumns)
+        JsonSerializerOptions jsonSerializerOptions)
     {
         _user = userRepository;
         _language = languageManager;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _replyKeyboardColumns = replyKeyboardColumns;
     }
 
     public static string CommandName => "/choose";
@@ -47,9 +44,9 @@ public class ChooseCommand : ICommand
             // check is user selected language
 
             var languages = await _language.GetLanguagesAsync();
+
             var markups = Utilities.ParseCollectionKeyboardMarkup(
                 models: languages,
-                columns: _replyKeyboardColumns,
                 markupType: MarkupType.Language,
                 messageId: messageId,
                 jsonSerializerOptions: _jsonSerializerOptions);

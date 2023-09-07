@@ -12,15 +12,12 @@ public class GameCommand : ICommand
 {
     private readonly IGameManager _markup;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private readonly int _replyKeyboardColumns;
 
     public GameCommand(
         IGameManager markup,
-        JsonSerializerOptions jsonSerializerOptions,
-        int replyKeyboardColumns)
+        JsonSerializerOptions jsonSerializerOptions)
     {
         _markup = markup;
-        _replyKeyboardColumns = replyKeyboardColumns;
         _jsonSerializerOptions = jsonSerializerOptions;
     }
 
@@ -41,7 +38,6 @@ public class GameCommand : ICommand
         var games = await _markup.GetGamesAsync();
         var markups = Utilities.ParseCollectionKeyboardMarkup(
             models: games,
-            columns: _replyKeyboardColumns,
             markupType: MarkupType.Game,
             messageId: messageId,
             jsonSerializerOptions: _jsonSerializerOptions);

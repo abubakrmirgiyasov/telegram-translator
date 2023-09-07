@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.DependencyInjection;
+using OpenAI.Extensions;
 using System.Text.Json;
 using Telegram.Bot;
 using WebHook.Translator.Common;
@@ -14,6 +16,8 @@ using WebHook.Translator.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("config.json", false, true);
 
 builder.Services.Configure<AppSettings>(builder.Configuration);
 builder.Configuration.GetRequiredConfigurationInstance<MongoDbSettings>("MongoDbSettings");
@@ -48,7 +52,10 @@ builder.Services.AddScoped<CustomPoll>();
 builder.Services.AddScoped<ILanguageManager, LanguageManager>();
 builder.Services.AddScoped<IGameManager, GameManager>();
 builder.Services.AddScoped<ITestManager, TestManager>();
+builder.Services.AddScoped<IImageQuestionManager, ImageQuestionManager>();
 builder.Services.AddScoped<UpdateHandlerService, UpdateHandlerServiceImplementation>();
+
+builder.Services.AddOpenAIService(settings => { settings.ApiKey = "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"; });
 
 builder.Services.AddCommandManager((serviceProvider, commandManager) =>
 {
@@ -62,13 +69,11 @@ builder.Services.AddCommandManager((serviceProvider, commandManager) =>
     commandManager.RegisterCommand(new TranslateCommand());
     commandManager.RegisterCommand(new GameCommand(
         markup: gameManager,
-        jsonSerializerOptions: serializerOptions,
-        replyKeyboardColumns: Constants.KEYBOARD_COLUMNS));
+        jsonSerializerOptions: serializerOptions));
     commandManager.RegisterCommand(new ChooseCommand(
         userRepository: userRepository,
         languageManager: languageManager,
-        jsonSerializerOptions: jsonSerializerOptions,
-        replyKeyboardColumns: Constants.KEYBOARD_COLUMNS));
+        jsonSerializerOptions: jsonSerializerOptions));
 });
 
 builder.Services.Configure<FormOptions>(options =>
@@ -83,7 +88,6 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHostedService<WebHookBackgroundService>();
-
 
 var app = builder.Build();
 

@@ -7,6 +7,13 @@ public class AppSettings
     public MongoDbSettings MongoDbSettings { get; set; }
 
     public TelegramSettings TelegramSettings { get; set; }
+
+    public ChatGPTSettings ChatGPTSettings { get; set; }
+}
+
+public class ChatGPTSettings
+{
+    public string Key { get; set; }
 }
 
 public class MongoDbSettings

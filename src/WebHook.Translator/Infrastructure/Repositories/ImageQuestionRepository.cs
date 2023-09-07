@@ -11,6 +11,34 @@ public class ImageQuestionRepository : Repository<ImageQuestion>
     public ImageQuestionRepository(IOptions<AppSettings> settings)
         : base(settings) { }
 
+    public async Task<List<ImageQuestionViewModel>> GetImageQuestionsAsync()
+    {
+        try
+        {
+            var image = await Task.FromResult(FilterBy(x => x.Question != "").FirstOrDefault());
+            var list = new List<ImageQuestionViewModel>();
+
+            for (int i = 0; i < image?.Options.Length; i++)
+            {
+                list.Add(new ImageQuestionViewModel()
+                {
+                    Code = image.Id.ToString(),
+                    Ico = "\U00002753",
+                    OptionId = image.CorrectAnswer,
+                    Hint = image.Hint,
+                    Image = image.ImagePath,
+                    Option = image.Options[i],
+                    Question = image.Question,
+                });
+            }
+            return list;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message, ex);
+        }
+    }
+
     public async Task CreateImageQuestionAsync(ImageQuestionBindingModel model)
     {
         try

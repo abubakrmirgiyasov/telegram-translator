@@ -19,6 +19,9 @@ mono_crash.*
 src/WebHook.Translator/wwwroot
 ./src/WebHook.Translator/wwwroot
 *./src/WebHook.Translator/wwwroot
+*./src/WebHook.Translator/config.json
+src/WebHook.Translator/config.json
+/src/WebHook.Translator/config.json
 
 # Build results
 [Dd]ebug/

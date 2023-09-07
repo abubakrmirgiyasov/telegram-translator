@@ -25,6 +25,28 @@ public class ImageQuestion : Document
     public int CorrectAnswer { get; set; }
 }
 
+public class ImageQuestionViewModel : IBase
+{
+    public string Code { get; set; } = null!;
+
+    public string Ico { get; set; } = null!;
+
+    public string Question { get; set; } = null!;
+
+    public string Option { get; set; } = null!;
+
+    public string? Hint { get; set; }
+
+    public int OptionId { get; set; }
+
+    public string Image { get; set; } = null!;
+
+    public override string ToString()
+    {
+        return $"{Ico} {Option}";
+    }
+}
+
 public class ImageQuestionBindingModel
 {
     public string Question { get; set; } = null!;

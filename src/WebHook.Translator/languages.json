@@ -1,7 +1,0 @@
-{
-  "Test": {
-    "Question": "test1",
-    "Options": [ "t1", "t2" ],
-    "CorrectOPtion": "t2"
-  }
-}

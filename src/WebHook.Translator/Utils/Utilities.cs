@@ -10,10 +10,11 @@ namespace WebHook.Translator.Utils;
 public static partial class Utilities
 {
     public static InlineKeyboardMarkup ParseCollectionKeyboardMarkup(
-        int columns,
         int messageId,
         MarkupType markupType,
         JsonSerializerOptions jsonSerializerOptions,
+        string? help = null,
+        string? helpUrl = null,
         IEnumerable<IBase>? models = null)
     {
         var buttonList = new List<IEnumerable<InlineKeyboardButton>>();
@@ -28,6 +29,8 @@ public static partial class Utilities
 
             if (list[i] is TestViewModel tsm)
                 response.Code = $"{tsm.OptionId}_{(int)markupType}_{list[i].Code}";
+            else if (list[i] is ImageQuestionViewModel img)
+                response.Code = $"{img.OptionId}_{(int)markupType}_{list[i].Code}";
             else
                 response.Code = $"{(int)markupType}_{list[i].Code}";
 
@@ -37,12 +40,20 @@ public static partial class Utilities
                 text: text,
                 callbackData: json));
 
-            if (row.Count == columns)
+            if (row.Count % 2 == 0)
             {
                 buttonList.Add(row.ToArray());
                 row.Clear();
             }
         }
+
+        //if (!string.IsNullOrEmpty(help) && !string.IsNullOrEmpty(helpUrl))
+        //    buttonList.Add(new List<InlineKeyboardButton>()
+        //    {
+        //        InlineKeyboardButton.WithUrl(
+        //            text: help,
+        //            url: helpUrl),
+        //    });
 
         if (row.Count > 0)
             buttonList.Add(row.ToArray());
