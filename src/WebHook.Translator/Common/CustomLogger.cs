@@ -1,4 +1,4 @@
-﻿namespace WebHook.Translator.Services;
+﻿namespace WebHook.Translator.Common;
 
 public class CustomLogger<T>
 {
@@ -9,7 +9,7 @@ public class CustomLogger<T>
     public static void Write(string message, ConsoleColor color, bool writeToLog = true)
     {
         WriteToConsole(message, color);
-        
+
         if (writeToLog)
             WriteToFile(message);
     }

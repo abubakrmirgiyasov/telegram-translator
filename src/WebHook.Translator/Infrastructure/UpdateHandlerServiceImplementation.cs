@@ -1,13 +1,7 @@
-﻿using OpenAI.Managers;
-using OpenAI;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
+﻿using System.Text.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using WebHook.Translator.Common;
-using WebHook.Translator.Infrastructure.DbContext.Interfaces;
 using WebHook.Translator.Infrastructure.Managers.Interfaces;
 using WebHook.Translator.Infrastructure.Messages;
 using WebHook.Translator.Infrastructure.Repositories;
@@ -26,6 +20,7 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
     private readonly IImageQuestionManager _imageQuestionManager;
     private readonly UserRepository _userRepository;
     private readonly CustomPoll _poll;
+    private readonly IServiceProvider _serviceProvider;
 
     public UpdateHandlerServiceImplementation(
         JsonSerializerOptions jsonSerializerOptions,
@@ -33,6 +28,7 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
         ILanguageManager languageManager,
         IGameManager gameManager,
         UserRepository userRepository,
+        IServiceProvider serviceProvider,
         ITestManager testManager,
         IImageQuestionManager imageQuestionManager,
         CustomPoll poll,
@@ -47,12 +43,13 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
         _poll = poll;
         _testManager = testManager;
         _imageQuestionManager = imageQuestionManager;
+        _serviceProvider = serviceProvider;
 
         MessageReceived += OnMessageReceived;
         CallBackQuery += OnCallbackQueryData;
     }
 
-    private async Task OnMessageReceived(Message message, CancellationToken cancellationToken)
+    private async Task OnMessageReceived(Telegram.Bot.Types.Message message, CancellationToken cancellationToken)
     {
         try
         {
@@ -70,15 +67,10 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
             }
             else
             {
-                var openAiService = new OpenAIService(new OpenAiOptions()
-                {
-                    ApiKey =  "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"
-                });
-
-                //await _BotClient.SendTextMessageAsync(
-                //    chatId: chatId,
-                //    text: OpenAI,
-                //    cancellationToken: cancellationToken);
+                await _BotClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: await new ChatGPTService().Test(message.Text!),
+                    cancellationToken: cancellationToken);
             }
 
             CustomLogger<UpdateHandlerServiceImplementation>.Write(message.Text, ConsoleColor.Green);

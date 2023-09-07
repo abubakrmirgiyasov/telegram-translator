@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using WebHook.Translator.Common;
 using WebHook.Translator.Infrastructure.Services.Interfaces;
-using WebHook.Translator.Services;
 
 namespace WebHook.Translator.Infrastructure.Services;
 

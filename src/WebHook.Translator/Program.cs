@@ -55,7 +55,7 @@ builder.Services.AddScoped<ITestManager, TestManager>();
 builder.Services.AddScoped<IImageQuestionManager, ImageQuestionManager>();
 builder.Services.AddScoped<UpdateHandlerService, UpdateHandlerServiceImplementation>();
 
-builder.Services.AddOpenAIService(settings => { settings.ApiKey = "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"; });
+//builder.Services.AddOpenAIService(settings => { settings.ApiKey = ""; });
 
 builder.Services.AddCommandManager((serviceProvider, commandManager) =>
 {

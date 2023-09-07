@@ -14,6 +14,8 @@ public class AppSettings
 public class ChatGPTSettings
 {
     public string Key { get; set; }
+
+    public int MaxTokens { get; set; }
 }
 
 public class MongoDbSettings

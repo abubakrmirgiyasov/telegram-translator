@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
+using WebHook.Translator.Common;
 using WebHook.Translator.Infrastructure;
-using WebHook.Translator.Services;
 
 namespace WebHook.Translator.Controllers;
 

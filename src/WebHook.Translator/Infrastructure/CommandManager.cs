@@ -4,7 +4,6 @@ using Telegram.Bot;
 using WebHook.Translator.Common;
 using WebHook.Translator.Controllers;
 using WebHook.Translator.Infrastructure.Services.Interfaces;
-using WebHook.Translator.Services;
 
 namespace WebHook.Translator.Infrastructure;
 
