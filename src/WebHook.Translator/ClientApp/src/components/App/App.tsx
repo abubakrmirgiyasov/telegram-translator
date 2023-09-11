@@ -1,20 +1,34 @@
-import { FormEvent, useEffect, useState } from "react";
-import { HashRouter as Router, Link, Routes, Route } from "react-router-dom";
-import Sidebar from "../Layouts/Sidebar/Sidebar";
+import React, { FormEvent, useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import axios from "axios";
-import Images from "../../pages/Test/Images";
+import { privateRoutes, publicRoutes } from "../RoutesData";
 
 function App() {
   return (
-    <Router>
-      <Sidebar />
+    <React.Fragment>
       <Routes>
-        <Route path={"/"} element={<Home />} errorElement={<Error />} />
-        <Route path={"/question-image"} element={<Images />} />
-        <Route path={"/test"} element={<Test />} />
-        <Route path={"/about"} element={<About />} />
+        <Route>
+          {privateRoutes.map((route, key) => (
+            <Route
+              key={key}
+              path={route.path}
+              element={route.component}
+              exact={true}
+            />
+          ))}
+        </Route>
+        <Route>
+          {publicRoutes.map((route, key) => (
+            <Route
+              key={key}
+              path={route.path}
+              element={route.component}
+              exact={true}
+            />
+          ))}
+        </Route>
       </Routes>
-    </Router>
+    </React.Fragment>
   );
 }
 

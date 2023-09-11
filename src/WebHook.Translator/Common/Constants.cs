@@ -1,6 +1,8 @@
-﻿using SharpCompress.Archives.GZip;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using SharpCompress.Archives.GZip;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using WebHook.Translator.Services;
 
@@ -81,11 +83,45 @@ public static partial class Constants
 }
 
 /// <summary>
-/// Emojis Constants
+/// 
 /// </summary>
 public static partial class Constants
 {
+    public static async Task<string?> AddImage(string? folder, IFormFile? file)
+    {
+        if (string.IsNullOrEmpty(folder) && file == null)
+            return null;
 
+        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folder!);
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        path = Path.Combine(path, file!.FileName);
+
+        using var stream = new FileStream(path, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        return path;
+    }
+
+    public static byte[] GetSalt()
+    {
+        using var random = RandomNumberGenerator.Create();
+        byte[] salt = new byte[128 / 8];
+        random.GetBytes(salt);
+        return salt;
+    }
+
+    public static string GetHash(string password, byte[] salt)
+    {
+        return Convert.ToBase64String(
+            KeyDerivation.Pbkdf2(
+                password: password,
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA1,
+                iterationCount: 1000,
+                numBytesRequested: 256 / 8));
+    }
 }
 
 public enum MarkupType : byte

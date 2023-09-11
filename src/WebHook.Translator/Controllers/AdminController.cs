@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebHook.Translator.Infrastructure.Repositories;
 using WebHook.Translator.Models;
@@ -7,6 +8,7 @@ namespace WebHook.Translator.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
+[Authorize(Roles = $"ADMIN")]
 public class AdminController : ControllerBase
 {
     private readonly TestRepository _testRepository;
@@ -20,12 +22,12 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateQuestion([FromBody] Test test)
+    public IActionResult CreateQuestion([FromBody] Test model)
     {
         try
         {
-            test.CorrectOption -= 1;
-            _testRepository.InsertOne(test);
+            model.CorrectOption -= 1;
+            _testRepository.InsertOne(model);
             return Ok(new { message = "post success" });
         }
         catch (Exception ex)

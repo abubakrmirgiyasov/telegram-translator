@@ -2,13 +2,13 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using WebHook.Translator.Common;
+using WebHook.Translator.Infrastructure;
 using WebHook.Translator.Infrastructure.Managers.Interfaces;
 using WebHook.Translator.Infrastructure.Messages;
 using WebHook.Translator.Infrastructure.Repositories;
 using WebHook.Translator.Models;
-using WebHook.Translator.Services;
 
-namespace WebHook.Translator.Infrastructure;
+namespace WebHook.Translator.Services;
 
 public class UpdateHandlerServiceImplementation : UpdateHandlerService
 {
@@ -69,7 +69,7 @@ public class UpdateHandlerServiceImplementation : UpdateHandlerService
             {
                 await _BotClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: await new ChatGPTService().Test(message.Text!),
+                    text: "test",
                     cancellationToken: cancellationToken);
             }
 

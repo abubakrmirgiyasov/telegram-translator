@@ -9,6 +9,15 @@ public class AppSettings
     public TelegramSettings TelegramSettings { get; set; }
 
     public ChatGPTSettings ChatGPTSettings { get; set; }
+
+    public RedisSettings RedisSettings { get; set; }
+}
+
+public class RedisSettings
+{
+    public string Host { get; set; }
+
+    public int Port { get; set; }
 }
 
 public class ChatGPTSettings

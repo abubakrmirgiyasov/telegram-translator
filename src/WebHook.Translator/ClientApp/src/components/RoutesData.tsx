@@ -1,12 +1,21 @@
-import React from "react";
+import React, { ReactNode } from "react";
+import SignIn from "../pages/auth/SignIn";
+import Home from "../pages/Home/Home";
 
-const RoutesData = (props) => {
-  return [
-    { name: "test", route: "test" },
-    { name: "test", route: "test" },
-    { name: "test", route: "test" },
-    { name: "test", route: "test" },
-  ];
-};
+interface IRoutes {
+  path: string;
+  component: ReactNode;
+  exact?: boolean;
+}
 
-export default RoutesData;
+export const publicRoutes: IRoutes[] = [
+  { path: "/", component: <SignIn /> },
+  {
+    path: "/forget-password",
+    component: <div>forget password</div>,
+  },
+];
+
+export const privateRoutes: IRoutes[] = [
+  { path: "/dashboard", component: <Home /> },
+];

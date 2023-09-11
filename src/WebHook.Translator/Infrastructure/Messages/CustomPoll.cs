@@ -133,44 +133,53 @@ public class CustomPoll
 
     public async Task CreateImageQuestion(long chatId, CancellationToken cancellationToken)
     {
-        var imageQuestion = await _imageQuestionRepository.GetImageQuestionsAsync();
-
-        if (imageQuestion.Count == 0)
+        try
         {
-            await _botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: "There are no questions for you 😓..",
-                cancellationToken: cancellationToken);
+            var imageQuestion = await _imageQuestionRepository.GetImageQuestionsAsync();
+
+            if (imageQuestion.Count == 0)
+            {
+                await _botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "There are no questions for you 😓..",
+                    cancellationToken: cancellationToken);
+            }
+            else
+            {
+                using var stream = new FileStream(imageQuestion[0].Image, FileMode.Open);
+
+                int messageId = (await _botClient.SendTextMessageAsync(
+                    chatId: chatId,
+                    text: "Wait..",
+                    cancellationToken: cancellationToken)).MessageId;
+
+                var markups = Utilities.ParseCollectionKeyboardMarkup(
+                    helpUrl: "test",
+                    help: "test",
+                    models: imageQuestion,
+                    markupType: MarkupType.Image,
+                    messageId: messageId,
+                    jsonSerializerOptions: _jsonSerializerOptions);
+
+                var media = new InputMediaPhoto(InputFile.FromStream(stream))
+                {
+                    Caption = "Вопрос📚: " +  imageQuestion[0].Question,
+                    HasSpoiler = true,
+                };
+
+                await _botClient.EditMessageMediaAsync(
+                    chatId: chatId,
+                    messageId: messageId,
+                    media: media,
+                    replyMarkup: markups,
+                    cancellationToken: cancellationToken);
+            }
         }
-        else
+        catch (Exception rc)
         {
-            using var stream = new FileStream(imageQuestion[0].Image, FileMode.Open);
-
-            int messageId = (await _botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: "Wait..",
-                cancellationToken: cancellationToken)).MessageId;
-
-            var markups = Utilities.ParseCollectionKeyboardMarkup(
-                helpUrl: "test",
-                help: "test",
-                models: imageQuestion,
-                markupType: MarkupType.Image,
-                messageId: messageId,
-                jsonSerializerOptions: _jsonSerializerOptions);
-
-            await _botClient.SendPhotoAsync(
-                chatId: chatId,
-                photo: InputFile.FromStream(stream),
-                caption: "Вопрос📚: " +  imageQuestion[0].Question,
-                replyMarkup: markups,
-                cancellationToken: cancellationToken);
-
-            await _botClient.DeleteMessageAsync(
-                chatId: chatId,
-                messageId: messageId,
-                cancellationToken: cancellationToken);
+            throw;
         }
+        
     }
 
     public async Task CheckImageQuestionAnswer(long chatId, int messageId, int correctOption, ImageQuestionViewModel model, CancellationToken cancellationToken)
@@ -188,15 +197,11 @@ public class CustomPoll
             else
                 sb.AppendLine("❌ Вы ответили неправильно, " + imageQuestion.Hint);
 
-            await _botClient.SendTextMessageAsync(
+            await _botClient.EditMessageTextAsync(
                 chatId: chatId,
                 text: sb.ToString(),
+                messageId: messageId,
                 cancellationToken: cancellationToken);
-
-            //await _botClient.DeleteMessageAsync(
-            //    chatId: chatId,
-            //    messageId: messageId,
-            //    cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {

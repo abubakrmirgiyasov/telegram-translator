@@ -24,7 +24,7 @@ public class ImageQuestionRepository : Repository<ImageQuestion>
                 {
                     Code = image.Id.ToString(),
                     Ico = "\U00002753",
-                    OptionId = image.CorrectAnswer,
+                    OptionId = i,
                     Hint = image.Hint,
                     Image = image.ImagePath,
                     Option = image.Options[i],
@@ -43,13 +43,13 @@ public class ImageQuestionRepository : Repository<ImageQuestion>
     {
         try
         {
-            string path = await AddImage(model.ImageFolder, model.Image);
+            string? path = await Constants.AddImage(model.ImageFolder, model.Image);
 
             var image = new ImageQuestion()
             {
                 ImageFolder = model.ImageFolder,
                 ImageSize = model.Image.Length,
-                ImagePath = path,
+                ImagePath = path!,
                 CorrectAnswer = model.CorrectAnswer,
                 Hint = model.Hint,
                 ImageTitle = model.Image.FileName,
@@ -64,19 +64,5 @@ public class ImageQuestionRepository : Repository<ImageQuestion>
         {
             throw new Exception(ex.Message, ex);
         }
-    }
-
-    private static async Task<string> AddImage(string folder, IFormFile file)
-    {
-        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folder);
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
-
-        path = Path.Combine(path, file.FileName);
-
-        using var stream = new FileStream(path, FileMode.Create);
-        await file.CopyToAsync(stream);
-
-        return path;
     }
 }
